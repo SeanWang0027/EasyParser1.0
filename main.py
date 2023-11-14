@@ -65,7 +65,7 @@ def SynRuleDisplay():
 # 界面显示语法分析FIRST集合
 def SynFIRSTDisplay():
     SynScr1.delete(1.0, END)
-    FirstSets_path = './log/FirstSets.txt'
+    FirstSets_path = './program/FirstSets.txt'
     sourcefile = open(FirstSets_path,'r',encoding = 'utf-8')
     for line in sourcefile:
         SynScr1.insert('end',line)
