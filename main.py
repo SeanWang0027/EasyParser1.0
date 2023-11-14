@@ -57,7 +57,7 @@ def SynAnalyzeFunc():
 # 界面显示语法分析规则
 def SynRuleDisplay():
     SynScr1.delete(1.0, END)
-    SynGrammar_path = './syntax/SynGra.txt'  # 词法规则文件相对路径
+    SynGrammar_path = './program/productions.txt'
     sourcefile = open(SynGrammar_path,'r',encoding = 'utf-8')
     for line in sourcefile:
         SynScr1.insert('end',line)
@@ -74,14 +74,6 @@ def SynFIRSTDisplay():
 def Synstackdisplay():
     SynScr2.delete(1.0, END)
     FirstSets_path = './syntax/StackInfo.txt'
-    sourcefile = open(FirstSets_path,'r',encoding = 'utf-8')
-    for line in sourcefile:
-        SynScr2.insert('end',line)
-
-# 界面显示语法分析语法树
-def SynTreedisplay():
-    SynScr2.delete(1.0, END)
-    FirstSets_path = './syntax/SynTree.txt'
     sourcefile = open(FirstSets_path,'r',encoding = 'utf-8')
     for line in sourcefile:
         SynScr2.insert('end',line)
