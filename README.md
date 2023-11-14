@@ -1,5 +1,12 @@
 # EasyParser1.0
 ## How to use it?
+Before you use this `repo`, please use `git clone` to download the whole project to your own computer.
+And before everything starts, you should first create 2 directories:
+```shell
+cd ./EasyParser1.0
+mkdir log
+mkdir syntax
+```
 Just directly use the command below.
 ```shell
 python ./main.py
