@@ -80,7 +80,6 @@ number
 identifier
 =
 identifier
-;
 }
 return
 identifier

@@ -13,7 +13,7 @@ int program(int a, int b, int c){
 	a = a + 10;
 	while (i <= 100){
 		i = j * 2;
-		j = i;
+		j = i
 	}
 	return i;
 }

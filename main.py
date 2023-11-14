@@ -1,14 +1,8 @@
 from LexAnalyze import LexAnalyze
 import os
 import tkinter as tk
-from tkinter.filedialog import askdirectory
-from tkinter import StringVar
 from tkinter import *
 from tkinter import scrolledtext
-from pandas import read_csv
-from tkinter import ttk
-from tkinter import messagebox
-import csv
 from tkinter import filedialog
 
 #向分析表中插入数据

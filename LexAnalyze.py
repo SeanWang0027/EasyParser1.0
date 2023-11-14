@@ -1,14 +1,50 @@
-import tkinter as tk
-from tkinter.filedialog import askdirectory
-from tkinter import StringVar
-from tkinter import *
-from tkinter import scrolledtext
-from pandas import read_csv
-from tkinter import ttk
-from tkinter import messagebox
-import csv
-from FA import NFA, NFANode, DFA, DFANode
-import hashlib
+class DFANode(object):
+    def __init__(self, name=None, isFinal=0):
+        super(DFANode, self).__init__()
+        self.name,self.isFinal,self.edge = name,isFinal,{}
+    def addEdge(self, alpha, target):
+        if alpha in self.edge:
+            self.edge[alpha].add(target)
+        else:
+            nextNodes = set()
+            nextNodes.add(target)
+            self.edge[alpha] = nextNodes
+
+class DFA(object):
+
+    def __init__(self, terminators):
+        super(DFA, self).__init__()
+        self.terminators = terminators
+        self.status = {}
+
+class NFANode(object):
+    def __init__(self, name=None, isFinal=0):
+        super(NFANode, self).__init__()
+        self.name,self.isFinal,self.edge = name,isFinal,{}
+    def addEdge(self, alpha, target):
+        if alpha in self.edge:
+            self.edge[alpha].add(target)
+        else:
+            nextNodes = set()
+            nextNodes.add(target)
+            self.edge[alpha] = nextNodes
+
+class NFA(object):
+
+    def __init__(self, terminators=None):
+        super(NFA, self).__init__()
+        self.terminators,self.status = terminators,{}
+
+class LRDFANode(object):
+    def __init__(self, id):
+        self.id,self.itemSet = id,list()
+ 
+    def addItemSetBySet(self, itemSet):
+        for i in itemSet:
+            if i in self.itemSet:
+                continue 
+            else:
+                self.itemSet.append(i)
 
 digit = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -19,10 +55,10 @@ keyword = ['int', 'double', 'char', 'float', 'break', 'continue',
            'do', 'while', 'if', 'else', 'for', 'void', 'return']
 
 class LexAnalyze(object):
-    "词法分析类"
+    "LexAnalyzer"
     def __init__(self):
-        self.productions = []       # 产生式列表
-        self.alphabets = {}         # 字母表（终结符）
+        self.productions = [] 
+        self.alphabets = {} 
         self.keywords = {}
         self.NFA = None
         self.DFA = None
@@ -47,8 +83,6 @@ class LexAnalyze(object):
                 CrossLine = True
                 string = string[:b]
         return CrossLine, string
-
-    # 入口参数为字符串型源代码,返回值为预处理之后包含每一行源代码的字符串
 
     def Preprocessing(self, sourcecode):
         "去除注释"
@@ -405,200 +439,3 @@ class LexAnalyze(object):
         else:
             print("Lex analyze failed!")
         return False,error_message
-
-class c_tokenner:
-    type = None
-    text = None
-    # single token
-    EOS_TOKEN  = 1             # END of string
-    ADD_TOKEN = EOS_TOKEN + 1  # +
-    SUB_TOKEN = ADD_TOKEN + 1  # -
-    MUL_TOKEN = SUB_TOKEN + 1  # *
-    DIV_TOKEN = MUL_TOKEN + 1  # /
-    
-    LBL_TOKEN = DIV_TOKEN + 1  # (
-    LBR_TOKEN = LBL_TOKEN + 1  # )
-    SEM_TOKEN = LBR_TOKEN + 1  # ;
-    NOT_TOKEN = SEM_TOKEN + 1  # '
-    
-    EMT_TOKEN = NOT_TOKEN + 1  # space
-    NEW_TOKEN = EMT_TOKEN + 1  # new line
-    # multi token
-    ID_TOKEN    = 50           # letter
-    NUM_TOKEN   = ID_TOKEN + 1 # number
-    IF_TOKEN    = NUM_TOKEN + 1 # if
-    THEN_TOKEN  = IF_TOKEN + 1 # then
-    ELSE_TOKEN  = THEN_TOKEN + 1 # else
-    WHILE_TOKEN = ELSE_TOKEN + 1 # while
-    DO_TOKEN    = WHILE_TOKEN + 1 # do
-    
-    # operator
-    GREA_TOKEN  = DO_TOKEN + 1   # >
-    LESS_TOKEN  = GREA_TOKEN + 1 # <
-    EVAL_TOKEN  = LESS_TOKEN + 1 # =
-    EQUL_TOKEN  = EVAL_TOKEN + 1 # ==
-    G_E_TOKEN   = EQUL_TOKEN + 1 # >=61
-    L_E_TOKEN   = G_E_TOKEN + 1  # <=
-    N_E_TOKEN   = L_E_TOKEN + 1  # != 
-    
-    INT_TOKEN   = N_E_TOKEN + 1  # int
-    FLO_TOKEN   = INT_TOKEN + 1  # float
-    ANY_TOKEN   = FLO_TOKEN + 1  # other char
-
-    @classmethod
-    def text(self,t):
-        if(t.type == c_tokenner.ID_TOKEN):
-            return 'id'
-        elif(t.type == c_tokenner.NUM_TOKEN):
-            return 'int10'
-        else:
-            return t.text
-
-def insert(table, result):
-    # 插入数据
-    for index, data in enumerate(result):
-        if index != 0:
-            table.insert('', END, values=data)  # 添加数据到末尾
-
-class c_symboller:
-    symbol_table = {}
-    #
-    # add token to symbol table
-    #
-    def add(self, tk):
-        buf  = str(tk.type) + tk.text
-        hash = hashlib.md5(buf).hexdigest()
-        if not self.symbol_table.has_key(hash):
-            self.symbol_table.update({hash:[tk.type, tk.text]})
-    #
-    # show symbol table
-    #
-    def show(self):
-        for key in self.symbol_table:
-            print(self.symbol_table[key])
-    #
-    # write symbol to file
-    #
-    def write2file(self):
-        fhandle = open('symbol_table.txt','w')
-        for key in self.symbol_table:
-            buf = '%s\t%d\t%s\n'%(key, self.symbol_table[key][0], self.symbol_table[key][1])
-            fhandle.write(buf)
-        fhandle.close()
-
-    def read2file(self):
-        fhandle = open('symbol_table.txt','w')
-        for key in self.symbol_table:
-            buf = '%s\t%d\t%s\n'%(key, self.symbol_table[key][0], self.symbol_table[key][1])
-            print(buf)
-        fhandle.close()
-
-if __name__ == '__main__':
-    source_path = './sourceprogram.cc'  # 源文件相对路径
-    LexGrammar_path = './LexGra.txt'  # 词法规则文件相对路径
-    TokenTable_path = './LexAnaResult.txt'  # 存储TOKEN表的相对路径
-
-    lex_ana = LexAnalyze()
-    lex_ana.readLexGrammar(LexGrammar_path)
-    lex_ana.createNFA()
-    lex_ana.createDFA()
-    codelist = lex_ana.Preprocessing(open(source_path, "r").read())
-    lex_ana.analyze(codelist, TokenTable_path)
-
-    # 第1步，实例化object，建立窗口window
-    window = tk.Tk()
-    # 第2步，给窗口的可视化起名字
-    window.title('My Window') 
-    # 第3步，设定窗口的大小(长 * 宽)
-    window.geometry('800x600')  # 这里的乘是小x
-    # 第4步，在图形界面上设定标签
-    var = tk.StringVar()    # 将label标签的内容设置为字符类型，用var来接收hit_me函数的传出内容用以显示在标签上
-    l = tk.Label(window, textvariable=var, bg='green', fg='white', font=('Arial', 12), width=30, height=2)
-    # 说明： bg为背景，fg为字体颜色，font为字体，width为长，height为高，这里的长和高是字符的长和高，比如height=2,就是标签有2个字符这么高
-    #l.pack()
-
-    on_hit = False
-    def hit_me():
-        global on_hit
-        if on_hit == False:
-            on_hit = True
-            var.set('you hit me')
-        else:
-            on_hit = False
-            var.set('')
- 
-    # 第5步，在窗口界面设置放置Button按键
-    b = tk.Button(window, text='hit me', font=('Arial', 12), width=10, height=1, command=hit_me)
-
-    path = StringVar()
-
-    def selectPath():
-        var=StringVar()
-        scr = scrolledtext.ScrolledText(window, width=30, height=10, font=("隶书",18), bd =5)
-        scr.place(x=0,y=50)
-
-        path_ = askdirectory()
-        path.set(path_)
-        print(path_)
-        path_=path_.replace('\\','/')+'/LexAnaResult.txt'
-        f = open(path_,'r',encoding = 'utf-8')
-        for line in f:
-            scr.insert('end',line)
-        print(f.read())
-
-        with open('ActionGoto.csv', 'r') as f:
-            reader = csv.reader(f)
-            result = list(reader)
-            print(result[0])
-
-        columns = result[0]
-
-        screenwidth = window.winfo_screenwidth()  # 屏幕宽度
-        screenheight = window.winfo_screenheight()  # 屏幕高度
-        width = 1000
-        height = 500
-        x = int((screenwidth - width) / 2)
-        y = int((screenheight - height) / 2)
-        window.geometry('{}x{}+{}+{}'.format(width, height, x, y))  # 大小以及位置
-
-        tabel_frame = tk.Frame(window)
-        tabel_frame.pack()
-
-        xscroll = Scrollbar(tabel_frame, orient=HORIZONTAL)
-        yscroll = Scrollbar(tabel_frame, orient=VERTICAL)
-
-        table = ttk.Treeview(
-                master=tabel_frame,  # 父容器
-                height=10,  # 表格显示的行数,height行
-                columns=columns,  # 显示的列
-                show='headings',  # 隐藏首列
-                xscrollcommand=xscroll.set,  # x轴滚动条
-                yscrollcommand=yscroll.set,  # y轴滚动条
-                )
-        for column in columns:
-            table.heading(column=column, text=column, anchor=CENTER,
-                        command=lambda name=column:
-                        messagebox.showinfo('', '{}描述信息~~~'.format(name)))  # 定义表头
-        table.column(column=column, width=100, minwidth=100, anchor=CENTER, )  # 定义列
-        xscroll.config(command=table.xview)
-        xscroll.pack(side=BOTTOM, fill=X)
-        yscroll.config(command=table.yview)
-        yscroll.pack(side=RIGHT, fill=Y)
-        table.pack(fill=BOTH, expand=True)
-
-
-        insert(table, result)
-
-        btn_frame = Frame()
-        btn_frame.pack()
-        Button(btn_frame, text='添加', bg='yellow', width=20, command=insert).pack()
-    
-    label=Label(window,text = "目标路径:")
-    label.place(x=0,y=0)
-    entry = Entry(window, textvariable = path)
-    entry.place(x=200, y=20)
-    #Button(window, text = "路径选择", command = selectPath).grid(row = 0, column = 2)
-    button1 = tk.Button(window, text = "路径选择", font=('Arial', 12), width=10, height=1, command=selectPath)
-    button1.place(x=50, y=10)
-
-    window.mainloop()
